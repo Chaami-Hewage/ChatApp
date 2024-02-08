@@ -1,12 +1,10 @@
 const express = require('express');
-const chats = require("./data/data");
 const dotenv = require('dotenv');
 const app = express();
 const cors = require('cors');
 const connectDB = require('./config/db');
-const UserRoutes = require('./models/UserModel');
-
-
+const UserRoutes = require('./routes/UserRoutes');
+const { notfound, errorHandler } = require('./middleware/errorMiddleware');
 
 dotenv.config();
 
@@ -14,13 +12,17 @@ connectDB();
 
 app.use(cors());
 app.use(express.json());
+app.use(errorHandler);
 
 app.get('/', (req, res) => {
     res.send('API is running...');
 });
 
-// Use the correct UserRoutes file, assuming it's in the ./routes directory
-app.use('/api/users', require('./routes/UserRoutes'));
+// Use the correct UserRoutes file
+app.use('/api/users', UserRoutes);
+
+app.use(notfound);
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 

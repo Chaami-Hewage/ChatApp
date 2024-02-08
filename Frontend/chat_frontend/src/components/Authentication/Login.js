@@ -22,7 +22,7 @@ const Login = () => {
     const [email, setEmail] = useState();
     const [password, setPassword] = useState();
 
-    const submitHandler = async () => {
+    const loginHandler = async () => {
         if (!name || !email || !password) {
             toast({
                 title: "Required Fields are Missing!",
@@ -41,7 +41,7 @@ const Login = () => {
                 },
             };
             const { data } = await axios.post(
-                "/api/user",
+                "/api/users/register",
                 {
                     name,
                     email,
@@ -58,7 +58,7 @@ const Login = () => {
                 position: "bottom",
             });
             localStorage.setItem("userInfo", JSON.stringify(data));
-            history("/chats"); // Use history as a function
+            history.push("/chats"); // Use history as a function
         } catch (error) {
             toast({
                 title: "Error Occurred!",
@@ -107,7 +107,7 @@ const Login = () => {
                 colorScheme="teal"
                 width="100%"
                 style={{ marginTop: 15 }}
-                onClick={submitHandler}
+                onClick={loginHandler}
             >
                Login
             </Button>
@@ -116,7 +116,7 @@ const Login = () => {
                 colorScheme="red"
                 width="100%"
                 style={{ marginTop: 15 }}
-                onClick={submitHandler}
+                onClick={loginHandler}
             >
                 Get guest user access
             </Button>
