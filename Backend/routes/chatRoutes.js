@@ -4,7 +4,10 @@ const protect = require('../middleware/authMiddleware');
 const {accessChat } = require('../controller/chatController');
 
 
-// router.route('/').post(protect, accessChat);
+
+
+router.route('/api/chats').post(accessChat);
+
 // router.route('/').get(protect, fetchChat);
 // router.route('/group').post(protect, createGroupChat);
 // router.route('/rename').put(protect, renameGroupChat);
