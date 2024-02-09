@@ -17,10 +17,11 @@ const Login = () => {
     const handleClick = () => setShow(!show);
     const toast = useToast();
     const history = useNavigate();
-
     const [name, setName] = useState();
     const [email, setEmail] = useState();
     const [password, setPassword] = useState();
+
+
 
     const loginHandler = async () => {
         if (!name || !email || !password) {
@@ -85,6 +86,7 @@ const Login = () => {
                 <Input
                     type="email"
                     placeholder="Enter Your Email Address"
+                    value={email}
                     onChange={(e) => setEmail(e.target.value)}
                 />
             </FormControl>
@@ -94,6 +96,7 @@ const Login = () => {
                     <Input
                         type={show ? "text" : "password"}
                         placeholder="Enter Password"
+                        value={password}
                         onChange={(e) => setPassword(e.target.value)}
                     />
                     <InputRightElement width="4.5rem">
