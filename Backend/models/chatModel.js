@@ -1,38 +1,19 @@
-const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+const mongoose = require("mongoose");
 
-// Define collection and schema for Chat
-let chatModel = new Schema(
+const chatModel = mongoose.Schema(
     {
-        chatName: {
-            type: String,
-            trim: true,
-        },
-        isGroupChat: {
-            type: Boolean,
-            default: false,
-        },
-        users: [
-            {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: 'User',
-                default: [],
-            },
-        ],
+        chatName: { type: String, trim: true },
+        isGroupChat: { type: Boolean, default: false },
+        users: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
         latestMessage: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'Message',
+            ref: "Message",
         },
-        groupAdmin: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'User',
-        },
+        groupAdmin: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     },
-    {
-        timestamps: true,
-    }
+    { timestamps: true }
 );
 
-const Chat = mongoose.model('Chat', chatModel);
+const Chat = mongoose.model("Chat", chatModel);
 
 module.exports = Chat;

@@ -5,8 +5,7 @@ const cors = require('cors');
 const connectDB = require('./config/db');
 const UserRoutes = require('./routes/UserRoutes');
 const { notfound, errorHandler } = require('./middleware/errorMiddleware');
-const ChatRoutes = require('./routes/ChatRoutes');
-
+const ChatRoutes = require('./routes/chatRoutes');
 
 dotenv.config();
 
@@ -20,10 +19,11 @@ app.get('/', (req, res) => {
     res.send('API is running...');
 });
 
-// Use the correct UserRoutes file
+// Correctly use '/api/users' and '/api/chats' for routes
 app.use('/api/users', UserRoutes);
 app.use('/api/chats', ChatRoutes);
 
+// Use notfound and errorHandler after the route handling
 app.use(notfound);
 app.use(errorHandler);
 
