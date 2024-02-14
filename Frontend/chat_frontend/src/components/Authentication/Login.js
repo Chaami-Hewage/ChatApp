@@ -16,12 +16,10 @@ const Login = () => {
     const [show, setShow] = useState(false);
     const handleClick = () => setShow(!show);
     const toast = useToast();
-    const history = useNavigate();
-    const [name, setName] = useState();
-    const [email, setEmail] = useState();
-    const [password, setPassword] = useState();
-
-
+    const navigate = useNavigate();
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
 
     const loginHandler = async () => {
         if (!name || !email || !password) {
@@ -42,7 +40,7 @@ const Login = () => {
                 },
             };
             const { data } = await axios.post(
-                "/api/users/register",
+                "/api/users/login",
                 {
                     name,
                     email,
@@ -59,7 +57,8 @@ const Login = () => {
                 position: "bottom",
             });
             localStorage.setItem("userInfo", JSON.stringify(data));
-            history.push("/chats"); // Use history as a function
+            localStorage.setItem("user", JSON.stringify(data));
+            navigate("/chats");
         } catch (error) {
             toast({
                 title: "Error Occurred!",
@@ -112,7 +111,7 @@ const Login = () => {
                 style={{ marginTop: 15 }}
                 onClick={loginHandler}
             >
-               Login
+                Login
             </Button>
 
             <Button
