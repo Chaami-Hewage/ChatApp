@@ -4,7 +4,7 @@ const User = require('../models/userModel');
 const mongoose = require('mongoose');
 
 const accessChat = asyncHandler(async (req, res) => {
-    const { userId } = req.body;
+    const {userId} = req.body;
 
     if (!userId) {
         console.log("UserId param not sent with request");
@@ -14,8 +14,8 @@ const accessChat = asyncHandler(async (req, res) => {
     var isChat = await Chat.find({
         isGroupChat: false,
         $and: [
-            { users: { $elemMatch: { $eq: req.user._id } } },
-            { users: { $elemMatch: { $eq: userId } } },
+            {users: {$elemMatch: {$eq: req.user._id}}},
+            {users: {$elemMatch: {$eq: userId}}},
         ],
     })
         .populate("users", "-password")
@@ -24,7 +24,7 @@ const accessChat = asyncHandler(async (req, res) => {
     if (isChat.length > 0) {
         res.send(isChat[0]);
     } else {
-        var isUser = await User.findById (userId);
+        var isUser = await User.findById(userId);
     }
 
     if (isChat.length > 0) {
@@ -38,7 +38,7 @@ const accessChat = asyncHandler(async (req, res) => {
 
         try {
             const createdChat = await Chat.create(chatData);
-            const FullChat = await Chat.findOne({ _id: createdChat._id }).populate(
+            const FullChat = await Chat.findOne({_id: createdChat._id}).populate(
                 "users",
                 "-password"
             );
@@ -50,120 +50,120 @@ const accessChat = asyncHandler(async (req, res) => {
     }
 });
 
+
 const fetchChat = asyncHandler(async (req, res) => {
     try {
-        let result = await Chat.find({ users: { $elemMatch: { $eq: req.user._id } } })
+        let result = await Chat.find({users: {$elemMatch: {$eq: req.user._id}}})
             .populate("users", "-password")
             .populate("groupAdmin", "-password")
             .populate("latestMessage")
-            .sort({ updatedAt: -1 });
+            .sort({updatedAt: -1});
 
         // Use User.populate directly with await
-        result = await User.populate(result, { path: "latestMessage.sender", select: "name email" });
+        result = await User.populate(result, {path: "latestMessage.sender", select: "name email"});
 
         res.status(200).json(result);
     } catch (error) {
-        res.status(400).json({ message: error.message });
+        res.status(400).json({message: error.message});
     }
 });
 
+
 const createGroupChat = asyncHandler(async (req, res) => {
-    if(!req.body.users || !req.body.name) {
-        return res.status(400).json({ message: "Please add users" });
+    if (!req.body.users || !req.body.name) {
+        return res.status(400).json({message: "Please add users"});
     }
 
     var users = JSON.parse(req.body.users);
 
-    if(users.length < 2) {
-        return res.status(400).json({ message: "Add more than two users. " });
+    if (users.length < 2) {
+        return res.status(400).json({message: "Add more than two users. "});
     }
 
     users.push(req.user);
 
     try {
-      const groupChat= new Chat({
-          chatName: req.body.name,
-          isGroupChat: true,
-          users: users,
-          groupAdmin: req.user,
-      });
+        const groupChat = new Chat({
+            chatName: req.body.name,
+            isGroupChat: true,
+            users: users,
+            groupAdmin: req.user,
+        });
 
-      const fullChat = await groupChat.findOne({ _id: groupChat._id }).populate(
+        const fullChat = await groupChat.findOne({_id: groupChat._id}).populate(
             "users",
             "-password"
         ).populate("groupAdmin", "-password");
 
         res.status(200).json(fullChat);
-    }
-    catch ( message ) {
-        res.status(400).json({ message });
+    } catch (message) {
+        res.status(400).json({message});
     }
 });
 
 
-
 const renameGroupChat = asyncHandler(async (req, res) => {
-    const { chatId, newName } = req.body;
+    const {chatId, newName} = req.body;
 
     // Convert chatId to ObjectId
     const chatObjectId = mongoose.Types.ObjectId(chatId);
 
     const updatedChat = await Chat.findByIdAndUpdate(
         chatObjectId,
-        { chatName: newName },
+        {chatName: newName},
         {
             new: true,
         }
     ).populate("users", "-password").populate("groupAdmin", "-password");
 
     if (!updatedChat) {
-        return res.status(400).json({ message: "Chat not found" });
+        return res.status(400).json({message: "Chat not found"});
     } else {
         res.status(200).json(updatedChat);
     }
 });
 
 const addGroupChatMember = asyncHandler(async (req, res) => {
-    const { chatId, userId } = req.body;
+    const {chatId, userId} = req.body;
 
     // Convert chatId to ObjectId
     const chatObjectId = mongoose.Types.ObjectId(chatId);
 
     const updatedChat = await Chat.findByIdAndUpdate(
         chatObjectId,
-        { $push: { users: userId } },
+        {$push: {users: userId}},
         {
             new: true,
         }
     ).populate("users", "-password").populate("groupAdmin", "-password");
 
     if (!updatedChat) {
-        return res.status(400).json({ message: "Chat not found" });
+        return res.status(400).json({message: "Chat not found"});
     } else {
         res.status(200).json(updatedChat);
     }
 });
 
 const leaveGroupChat = asyncHandler(async (req, res) => {
-    const { chatId } = req.body;
+    const {chatId} = req.body;
 
     // Convert chatId to ObjectId
     const chatObjectId = mongoose.Types.ObjectId(chatId);
 
     const updatedChat = await Chat.findByIdAndUpdate(
         chatObjectId,
-        { $pull: { users: req.user._id } },
+        {$pull: {users: req.user._id}},
         {
             new: true,
         }
     ).populate("users", "-password").populate("groupAdmin", "-password");
 
     if (!updatedChat) {
-        return res.status(400).json({ message: "Chat not found" });
+        return res.status(400).json({message: "Chat not found"});
     } else {
         res.status(200).json(updatedChat);
     }
 
 });
 
-module.exports = { accessChat, fetchChat, createGroupChat, renameGroupChat, addGroupChatMember , leaveGroupChat};
+module.exports = {accessChat, fetchChat, createGroupChat, renameGroupChat, addGroupChatMember, leaveGroupChat};

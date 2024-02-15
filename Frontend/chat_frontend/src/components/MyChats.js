@@ -8,14 +8,15 @@ import ChatLoading from "./ChatLoading";
 import { getSender } from "./ChatLogics";
 import GroupChatModel from "./GroupChatModel";
 
-const MyChats = () => {
-    const { user, chats, setChats } = ChatState();
-    const [selectedChat, setSelectedChat] = useState(null);
+const MyChats = ({ fetchAgain }) => {
+    const [loggedUser, setLoggedUser] = useState();
+
+    const { selectedChat, setSelectedChat, user, chats, setChats } = ChatState();
 
     const toast = useToast();
 
     const fetchChats = async () => {
-        console.log(user._id);
+        // console.log(user._id);
         try {
             const config = {
                 headers: {
@@ -27,7 +28,7 @@ const MyChats = () => {
             setChats(data);
         } catch (error) {
             toast({
-                title: "Error!",
+                title: "Error Occured!",
                 description: "Failed to Load the chats",
                 status: "error",
                 duration: 5000,
@@ -38,8 +39,11 @@ const MyChats = () => {
     };
 
     useEffect(() => {
-        fetchChats();
-    }, []);
+        setLoggedUser(JSON.parse(localStorage.getItem("userInfo")));
+        fetchChats().then(r =>  console.log(r));
+        // eslint-disable-next-line
+    }, [fetchAgain]);
+
 
     return (
         <Box

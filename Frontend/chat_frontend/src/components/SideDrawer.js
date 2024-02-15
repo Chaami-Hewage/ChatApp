@@ -50,6 +50,7 @@ function SideDrawer() {
 
     const logout= () => {
         localStorage.removeItem("userInfo");
+        localStorage.removeItem("user");
         navigate("/");
     };
 

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useState} from "react";
 import {
     FormControl,
     Box,
@@ -13,14 +13,14 @@ import {
     ModalFooter,
     Button,
 } from "@chakra-ui/react";
-import { ChatState } from "../Context/ChatProvider";
-import { useToast } from "@chakra-ui/toast";
+import {ChatState} from "../Context/ChatProvider";
+import {useToast} from "@chakra-ui/toast";
 import axios from "axios";
 import UserListItem from "./UserListItem";
 import UserBadgeItem from "./UserBadgeItem";
 
-const GroupChatModal = ({ children }) => {
-    const { isOpen, onOpen, onClose } = useDisclosure();
+const GroupChatModal = ({children}) => {
+    const {isOpen, onOpen, onClose} = useDisclosure();
     const [groupChatName, setGroupChatName] = useState();
     const [selectedUsers, setSelectedUsers] = useState([]);
     const [search, setSearch] = useState("");
@@ -28,7 +28,7 @@ const GroupChatModal = ({ children }) => {
     const [loading, setLoading] = useState(false);
     const toast = useToast();
 
-    const { user, chats, setChats } = ChatState();
+    const {user, chats, setChats} = ChatState();
 
     const handleGroup = (userToAdd) => {
         if (selectedUsers.includes(userToAdd)) {
@@ -58,7 +58,7 @@ const GroupChatModal = ({ children }) => {
                     Authorization: `Bearer ${user.token}`,
                 },
             };
-            const { data } = await axios.get(`/api/users?search=${search}`, config);
+            const {data} = await axios.get(`/api/users?search=${search}`, config);
             setLoading(false);
             setSearchResult(data);
         } catch (error) {
@@ -95,7 +95,7 @@ const GroupChatModal = ({ children }) => {
                     Authorization: `Bearer ${user.token}`,
                 },
             };
-            const { data } = await axios.post(
+            const {data} = await axios.post(
                 `/api/chats/group`,
                 {
                     name: groupChatName,
@@ -136,7 +136,7 @@ const GroupChatModal = ({ children }) => {
             <span onClick={onOpen}>{children}</span>
 
             <Modal onClose={onClose} isOpen={isOpen} isCentered>
-                <ModalOverlay />
+                <ModalOverlay/>
                 <ModalContent>
                     <ModalHeader
                         fontSize="35px"
@@ -146,7 +146,7 @@ const GroupChatModal = ({ children }) => {
                     >
                         Create Group Chat
                     </ModalHeader>
-                    <ModalCloseButton />
+                    <ModalCloseButton/>
                     <ModalBody d="flex" flexDir="column" alignItems="center">
                         <FormControl>
                             <Input
