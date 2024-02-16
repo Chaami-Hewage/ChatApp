@@ -9,24 +9,34 @@ import { getSender } from "./ChatLogics";
 import GroupChatModel from "./GroupChatModel";
 
 const MyChats = ({ fetchAgain }) => {
-    const [loggedUser, setLoggedUser] = useState();
 
-    const { selectedChat, setSelectedChat, user, chats, setChats } = ChatState();
+
+
+    const [loggedUser, setLoggedUser] = useState();
+    const user = JSON.parse(localStorage.getItem('user')) ;
+
+    const [chats, setChats] = useState([]);
+
+    const { selectedChat, setSelectedChat } = ChatState();
 
     const toast = useToast();
 
     const fetchChats = async () => {
-        // console.log(user._id);
+        console.log(user.token)
+
         try {
             const config = {
                 headers: {
+                    "Content-type": "application/json",
                     Authorization: `Bearer ${user.token}`,
                 },
             };
 
-            const { data } = await axios.get("/api/chats", config);
+            const { data } = await axios.get("/api/chats/", config);
             setChats(data);
+            return data;  // Return the data from the function
         } catch (error) {
+            console.log(error);
             toast({
                 title: "Error Occured!",
                 description: "Failed to Load the chats",
@@ -35,15 +45,15 @@ const MyChats = ({ fetchAgain }) => {
                 isClosable: true,
                 position: "bottom-left",
             });
+            return null;  // Return null in case of error
         }
     };
 
     useEffect(() => {
         setLoggedUser(JSON.parse(localStorage.getItem("userInfo")));
-        fetchChats().then(r =>  console.log(r));
+        fetchChats().then((result) => console.log(result));
         // eslint-disable-next-line
     }, [fetchAgain]);
-
 
     return (
         <Box
@@ -51,7 +61,7 @@ const MyChats = ({ fetchAgain }) => {
             flexDir="column"
             alignItems="center"
             p={3}
-            bg="primary.100"
+            bgColor="gainsboro"
             w={{ base: "100%", md: "31%" }}
             borderRadius="lg"
             borderWidth="1px"
