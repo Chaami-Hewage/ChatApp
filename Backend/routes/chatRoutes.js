@@ -1,9 +1,15 @@
 const express = require('express');
 const router = express.Router();
-const { accessChat, fetchChat,createGroupChat, renameGroupChat, addGroupChatMember, leaveGroupChat } = require('../controller/chatController');
+const {
+    accessChat,
+    fetchChat,
+    createGroupChat,
+    renameGroupChat,
+    addGroupChatMember,
+    leaveGroupChat
+} = require('../controller/chatController');
 const {registerUser, allUsers} = require("../controller/userController");
 const {protect} = require("../middleware/authMiddleware");
-
 
 
 router.route("/").post(protect, accessChat);

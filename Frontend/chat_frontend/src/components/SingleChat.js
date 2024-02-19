@@ -1,12 +1,14 @@
-import React from "react";
-import { ChatState } from "../Context/ChatProvider";
-import { Box, IconButton } from "@chakra-ui/react";
-import { Text } from "@chakra-ui/react";
-import { ArrowBackIcon } from "@chakra-ui/icons";
+import React, {useState} from "react";
+import {ChatState} from "../Context/ChatProvider";
+import {Box, IconButton} from "@chakra-ui/react";
+import {Text} from "@chakra-ui/react";
+import {ArrowBackIcon} from "@chakra-ui/icons";
 import UpdateGroupChatModal from "./UpdateGroupChat";
+import ProfileModal from "./profileModal";
+import {getSender, getSenderFull} from "./ChatLogics";
 
-const SingleChat = ({ fetchAgain, setFetchAgain }) => {
-    const { user, selectedChat, setSelectedChat } = ChatState();
+const SingleChat = ({fetchAgain, setFetchAgain}) => {
+    const {user, selectedChat, setSelectedChat} = useState(); //if any chat is selected, it will be available in selectedChat
 
     // Define fetchMessages if needed
     const fetchMessages = async () => {
@@ -33,12 +35,47 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                         px={3}
                     >
                         <IconButton
-                            d={{ base: "none", md: "flex" }}
+                            d={{base: "none", md: "flex"}}
                             aria-label="Back"
-                            icon={<ArrowBackIcon />}
-                            onClick={() => setSelectedChat(null)}
+                            icon={<ArrowBackIcon/>}
+                            onClick={() => setSelectedChat("")}
                         />
+                        {(!selectedChat.isGroupChat ? (
+                            <>
+                                {getSender(user, selectedChat.users)}
+                                <ProfileModal
+                                    user={getSenderFull(user, selectedChat.users)}
+                                />
+                            </>
+                        ) : (
+                            <>
+                                {selectedChat.chatName.toUpperCase()}
+                                <UpdateGroupChatModal
+                                    fetchMessages={fetchMessages}
+                                    fetchAgain={fetchAgain}
+                                    setFetchAgain={setFetchAgain}
+                                />
+                            </>
+                        ))}
                     </Text>
+
+                    <Box
+                        d={{base: "none", md: "flex"}}
+                        alignItems="center"
+                        justifyContent="center"
+                        w="100%"
+                        h="100%"
+                        p={3}
+                        borderRadius="lg"
+                        borderWidth="1px"
+                        overflow={{base: "auto", md: "hidden"}}
+                        bg="lightsalmon"
+                    >
+                        {/* Messages */}
+                    </Box>
+
+
+
                     <Text fontSize="xl" fontWeight="bold" color="white" textAlign="center" mb={3}>
                         {selectedChat.chatName.toUpperCase()}
                     </Text>
@@ -48,7 +85,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                         setFetchAgain={setFetchAgain}
                     />
                     <Box
-                        d={{ base: "none", md: "flex" }}
+                        d={{base: "none", md: "flex"}}
                         alignItems="center"
                         justifyContent="center"
                         w="100%"
@@ -56,7 +93,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                         p={3}
                         borderRadius="lg"
                         borderWidth="1px"
-                        overflow={{ base: "auto", md: "hidden" }}
+                        overflow={{base: "auto", md: "hidden"}}
                         bg="green"
                     >
                         {/* Your Box content goes here */}
@@ -65,16 +102,28 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
             ) : (
                 // Render content when selectedChat is falsy
                 <Box
-                    d={{ base: selectedChat ? "flex" : "none", md: "flex" }}
-                    alignItems={{ base: "center", md: "flex-start" }}
+                    d={{base: selectedChat ? "flex" : "none", md: "flex"}}
+                    alignItems={{base: "center", md: "flex-start"}}
                     justifyContent="center"
-                    w={{ base: "100%", md: "70%" }}
-                    h={{ base: "100%", md: "100vh" }}
+                    w={{base: "100%", md: "70%"}}
+                    h={{base: "100%", md: "100vh"}}
                     p={3}
                     borderRadius="lg"
-                    borderWidth={{ base: "none", md: "1px" }}
+                    borderWidth={{base: "none", md: "1px"}}
                 >
-                    {/* Your Box content goes here */}
+                    <Text
+                        fontSize={{base: "md", md: "lg", lg: "xl"}}
+                        fontWeight="bold"
+                        color="black"
+                        textAlign="center"
+                        verticalAlign="middle"
+                        bg="White"
+                        p="20px"
+                        m="200px"
+                        marginLeft={{base: "0", md: "100px"}}
+                    >
+                        Select a chat to start messaging
+                    </Text>
                 </Box>
             )}
         </>

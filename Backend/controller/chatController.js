@@ -71,36 +71,42 @@ const fetchChat = asyncHandler(async (req, res) => {
 
 const createGroupChat = asyncHandler(async (req, res) => {
     if (!req.body.users || !req.body.name) {
-        return res.status(400).json({message: "Please add users"});
+        return res.status(400).json({ message: "Please add users and provide a name" });
     }
 
-    var users = JSON.parse(req.body.users);
+    const users = JSON.parse(req.body.users);
 
     if (users.length < 2) {
-        return res.status(400).json({message: "Add more than two users. "});
+        return res.status(400).json({ message: "Add more than two users." });
     }
 
     users.push(req.user);
 
-    try {
-        const groupChat = new Chat({
-            chatName: req.body.name,
-            isGroupChat: true,
-            users: users,
-            groupAdmin: req.user,
+    const groupChat = new Chat({
+        chatName: req.body.name,
+        isGroupChat: true,
+        users: users,
+        groupAdmin: req.user,
+    });
+
+    // Save the groupChat document
+    groupChat.save()
+        .then((savedChat) => {
+            // Populate necessary fields and send the response
+            Chat.findById(savedChat._id)
+                .populate("users", "-password")
+                .populate("groupAdmin", "-password")
+                .then((fullChat) => {
+                    res.status(200).json(fullChat);
+                })
+                .catch((error) => {
+                    res.status(400).json({ message: "Error populating chat details", error });
+                });
+        })
+        .catch((error) => {
+            res.status(400).json({ message: "Error creating group chat", error });
         });
-
-        const fullChat = await groupChat.findOne({_id: groupChat._id}).populate(
-            "users",
-            "-password"
-        ).populate("groupAdmin", "-password");
-
-        res.status(200).json(fullChat);
-    } catch (message) {
-        res.status(400).json({message});
-    }
 });
-
 
 const renameGroupChat = asyncHandler(async (req, res) => {
     const {chatId, newName} = req.body;

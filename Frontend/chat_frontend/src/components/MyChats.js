@@ -1,29 +1,21 @@
-import React, { useState, useEffect } from "react";
-import { ChatState } from "../Context/ChatProvider";
+import React, {useState, useEffect} from "react";
+import {ChatState} from "../Context/ChatProvider";
 import axios from "axios";
-import { Box, useToast } from "@chakra-ui/react";
-import { Button, Text, Stack } from "@chakra-ui/react";
-import { AddIcon } from "@chakra-ui/icons";
+import {Box, useToast} from "@chakra-ui/react";
+import {Button, Text, Stack} from "@chakra-ui/react";
+import {AddIcon} from "@chakra-ui/icons";
 import ChatLoading from "./ChatLoading";
-import { getSender } from "./ChatLogics";
+import {getSender} from "./ChatLogics";
 import GroupChatModel from "./GroupChatModel";
 
-const MyChats = ({ fetchAgain }) => {
-
-
-
-    const [loggedUser, setLoggedUser] = useState();
-    const user = JSON.parse(localStorage.getItem('user')) ;
-
+const MyChats = ({fetchAgain}) => {
+    const [loggedUser, setLoggedUser] = useState(null); // Initialize to null
+    const user = JSON.parse(localStorage.getItem("user")) || {}; // Initialize to an empty object
     const [chats, setChats] = useState([]);
-
-    const { selectedChat, setSelectedChat } = ChatState();
 
     const toast = useToast();
 
     const fetchChats = async () => {
-        console.log(user.token)
-
         try {
             const config = {
                 headers: {
@@ -32,9 +24,9 @@ const MyChats = ({ fetchAgain }) => {
                 },
             };
 
-            const { data } = await axios.get("/api/chats/", config);
+            const {data} = await axios.get("/api/chats/", config);
             setChats(data);
-            return data;  // Return the data from the function
+            return data;
         } catch (error) {
             console.log(error);
             toast({
@@ -45,31 +37,33 @@ const MyChats = ({ fetchAgain }) => {
                 isClosable: true,
                 position: "bottom-left",
             });
-            return null;  // Return null in case of error
+            return null;
         }
     };
 
+    const [selectedChat, setSelectedChat] = useState();
+
     useEffect(() => {
-        setLoggedUser(JSON.parse(localStorage.getItem("userInfo")));
+        setLoggedUser(JSON.parse(localStorage.getItem("user"))); //userInfo
         fetchChats().then((result) => console.log(result));
         // eslint-disable-next-line
     }, [fetchAgain]);
 
     return (
         <Box
-            d={{ base: selectedChat ? "none" : "flex", md: "flex" }}
+            d={{base: selectedChat ? "none" : "flex", md: "flex"}}
             flexDir="column"
             alignItems="center"
             p={3}
             bgColor="gainsboro"
-            w={{ base: "100%", md: "31%" }}
+            w={{base: "100%", md: "31%"}}
             borderRadius="lg"
             borderWidth="1px"
         >
             <Box
                 pb={3}
                 px={3}
-                fontSize={{ base: "28px", md: "30px" }}
+                fontSize={{base: "28px", md: "30px"}}
                 fontFamily="Work sans"
                 d="flex"
                 w="100%"
@@ -78,14 +72,14 @@ const MyChats = ({ fetchAgain }) => {
             >
                 My Chats
                 <GroupChatModel>
-                <br />
-                <Button
-                    d="flex"
-                    fontSize={{ base: "17px", md: "10px", lg: "17px" }}
-                    rightIcon={<AddIcon />}
-                >
-                    Create Group Chat
-                </Button>
+                    <br/>
+                    <Button
+                        d="flex"
+                        fontSize={{base: "17px", md: "10px", lg: "17px"}}
+                        rightIcon={<AddIcon/>}
+                    >
+                        Create Group Chat
+                    </Button>
                 </GroupChatModel>
             </Box>
             <Box
@@ -98,6 +92,8 @@ const MyChats = ({ fetchAgain }) => {
                 borderRadius="lg"
                 overflowY="hidden"
             >
+                {console.log(chats)}
+
                 {chats ? (
                     <Stack overflowY="scroll">
                         {chats.map((chat) => (
@@ -113,12 +109,12 @@ const MyChats = ({ fetchAgain }) => {
                             >
                                 <Text>
                                     {!chat.isGroupChat
-                                        ? getSender(user, chat.users)
+                                        ? getSender(user, chat.users)  // Make sure getSender returns a valid string
                                         : chat.chatName}
                                 </Text>
-                                {chat.latestMessage && (
+                                {chat.latestMessage && chat.latestMessage.sender && (
                                     <Text fontSize="xs">
-                                        <b>{chat.latestMessage.sender.name} : </b>
+                                        <b>{chat.latestMessage.sender.name || 'Unknown Sender'} : </b>
                                         {chat.latestMessage.content.length > 50
                                             ? chat.latestMessage.content.substring(0, 51) + "..."
                                             : chat.latestMessage.content}
@@ -128,8 +124,9 @@ const MyChats = ({ fetchAgain }) => {
                         ))}
                     </Stack>
                 ) : (
-                    <ChatLoading />
+                    <ChatLoading/>
                 )}
+
             </Box>
         </Box>
     );
