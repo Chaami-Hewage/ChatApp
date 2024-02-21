@@ -3,7 +3,7 @@ import {ChatState} from "../Context/ChatProvider";
 import {Box, IconButton} from "@chakra-ui/react";
 import {Text} from "@chakra-ui/react";
 import {ArrowBackIcon} from "@chakra-ui/icons";
-import UpdateGroupChatModal from "./UpdateGroupChat";
+import UpdateGroupChatModal from "./UpdateGroupChatModel";
 import ProfileModal from "./profileModal";
 import {getSender, getSenderFull} from "./ChatLogics";
 
